@@ -1,0 +1,37 @@
+Twitter::Badge
+==============
+
+Arul John, <arul@cpan.org>
+
+This module is a Twitter badge that displays the current Twitter information of any user.
+
+The documentation for Twitter::Badge can be found by running:
+
+  perldoc Twitter::Badge
+
+The documentation can also be found online at:
+
+  http://search.cpan.org/~arul/Twitter-Badge/lib/Twitter/Badge.pm
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This module requires these other modules and libraries:
+
+LWP::UserAgent
+
+COPYRIGHT AND LICENCE
+
+Copyright 2008 Arul John. All Rights Reserved.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.6.0 or,
+at your option, any later version of Perl you may have available.

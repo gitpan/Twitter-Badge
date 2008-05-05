@@ -1,0 +1,6 @@
+Revision history for Perl extension Twitter::Badge.
+
+0.01  Thu Apr 24 15:33:24 2008
+	- original version; created by h2xs 1.23 with options
+		-b5.6.0 -X -n Twitter::Badge
+
