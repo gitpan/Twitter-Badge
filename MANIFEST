@@ -4,3 +4,4 @@ MANIFEST
 README
 t/Twitter-Badge.t
 lib/Twitter/Badge.pm
+META.yml                                 Module meta-data (added by MakeMaker)
