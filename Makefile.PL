@@ -6,7 +6,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME              => 'Twitter::Badge',
     AUTHOR            => 'Arul John <arul@cpan.org>',
-    VERSION           => '0.01',
+    VERSION           => '0.02',
     PREREQ_PM         => {
         'LWP::UserAgent' => 0,
     },
