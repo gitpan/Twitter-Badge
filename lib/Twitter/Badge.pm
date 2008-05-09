@@ -7,7 +7,7 @@ use warnings;
 use Carp;
 use LWP::UserAgent;
 
-use version; our $VERSION = '0.01';
+our $VERSION = '0.01';
 
 sub new {
     my $class = shift;

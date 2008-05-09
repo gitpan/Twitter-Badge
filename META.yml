@@ -2,7 +2,7 @@
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Twitter-Badge
 version:      0.01
-version_from: lib/Twitter/Badge.pm
+version_from: 
 installdirs:  site
 requires:
     LWP::UserAgent:                0
