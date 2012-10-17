@@ -1,5 +1,3 @@
-# $Id$
-
 package Twitter::Badge;
 
 use strict;
@@ -7,7 +5,7 @@ use warnings;
 use Carp;
 use LWP::UserAgent;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub new {
     my $class = shift;
@@ -28,10 +26,11 @@ sub get_id_from_screen_name {
     my $screen_name = shift;
     $self->{screen_name} = $screen_name;
     my $ua = LWP::UserAgent->new(agent => $self->{ua});
-    my $response = $ua->get('http://twitter.com/'.$self->{screen_name});
+    my $response = $ua->get('http://api.twitter.com/1/statuses/user_timeline.xml?include_entities=true&include_rts=true&screen_name='.$self->{screen_name});
     if ($response->is_success) {
-        my $html = $response->content;
-        if ($html =~ m!<link rel="alternate".+?href="http://twitter.com/statuses/user_timeline/(\d+)\.rss" />!){
+        my $xml = $response->content;
+	$xml =~ s!\n!!g;
+        if ($xml =~ m!<status>.*?<user>.*?<id>(\d+)</id>.*?</user>.*?</status>!) {
             $self->{id} = $1;
         } else {
             undef $self->{id};
@@ -44,25 +43,36 @@ sub get_id_from_screen_name {
 
 sub fetch {
     my $self = shift;
-    if (!defined($self->{id})) {
-        return $self if not defined $self->{screen_name};
-        $self->{id} = $self->get_id_from_screen_name($self->{screen_name});
-        print "fetch() - screen name is : ".$self->{screen_name}."\n"; # DEBUG
-        print "fetch() - ID is : ".$self->{id}."\n"; # DEBUG
-        return if not defined $self->{id};
+    if (!defined($self->{id}) && !defined $self->{screen_name}) {
+        return $self;
+    }
+    # Check for ID or screen_name
+    my $id_or_screen_name;
+    if (defined($self->{screen_name})) {
+	$id_or_screen_name = 'screen_name='.$self->{screen_name};
+    } else {
+	$id_or_screen_name = 'id='.$self->{id};
     }
     my $ua = LWP::UserAgent->new(agent => $self->{ua});
-    my $response = $ua->get('http://twitter.com/statuses/user_timeline/'.$self->{id}.'.xml?count=1');
+    my $response = $ua->get('http://api.twitter.com/1/statuses/user_timeline.xml?include_entities=true&include_rts=true&'.$id_or_screen_name);
     if ($response->is_success) {
         my $xml = $response->content;
-        ($self->{name}) = ($xml =~ m!<name>(.*)</name>!);
-        ($self->{screen_name}) = ($xml =~ m!<screen_name>(.*)</screen_name>!);
-        ($self->{text}) = ($xml =~ m!<text>(.*)</text>!);
-        ($self->{profile_image_url}) = ($xml =~ m!<profile_image_url>(.*)</profile_image_url>!);
-        ($self->{followers_count}) = ($xml =~ m!<followers_count>(.*)</followers_count>!);
-        ($self->{created_at}) = ($xml =~ m!<created_at>(.*)</created_at>!);
+	$xml =~ s!\n!!g;
+	if ($xml =~ m!<status>(.+?)</status>!) {
+	    $xml = $1;
+	    # Get data
+	    ($self->{text}) = ($xml =~ m!<text>(.*)</text>!);
+	    if (!defined($self->{id})) {
+		$self->{id} = ($xml =~ m!<user>.*?<id>(\d+)</id>.*?</user>!);
+	    }
+	    ($self->{name}) = ($xml =~ m!<user>.*?<name>(.*)</name>.*?</user>!);
+	    ($self->{screen_name}) = ($xml =~ m!<user>.*?<screen_name>(.*)</screen_name>.*?</user>!);
+	    ($self->{profile_image_url}) = ($xml =~ m!<user>.*?<profile_image_url>(.*)</profile_image_url>.*?</user>!);
+	    ($self->{followers_count}) = ($xml =~ m!<user>.*?<followers_count>(.*)</followers_count>.*?</user>!);
+	    ($self->{created_at}) = ($xml =~ m!<user>.*?<created_at>(.*)</created_at>.*?</user>!);
+	}
     } else {
-        croak $response->status_line;
+	croak $response->status_line;
     }
     return $self;
 }
@@ -119,6 +129,10 @@ __END__
 =head1 NAME
 
 Twitter::Badge - Perl module that displays the current Twitter information of a user
+
+=head1 VERSION
+
+Version 0.03
 
 =head1 SYNOPSIS
 
@@ -276,24 +290,58 @@ You can use the Data::Dumper module to check the contents of C<$twitter> at any 
 
   print Dumper($twitter);
 
-=head1 BUGS
-
-There are no known bugs as of now.
-
-But since the Twitter::Badge module is built on the XML file that Twitter generates - and this is bound to change over a period of time - some methods may stop working. When that happens, I will update this module. I will also update the module if Twitter includes more useful content in its XML file, and on user requests. My email address for contact is E<lt>arul@cpan.orgE<gt>
-
-=head1 SEE ALSO
-
-Twitter API Documentation - L<http://groups.google.com/group/twitter-development-talk/web/api-documentation>
-
 =head1 AUTHOR
 
-Arul John - L<http://aruljohn.com>
+Arul John - L<http://aruljohn.com/>
 
-=head1 COPYRIGHT AND LICENCE
+=head1 BUGS
 
-Copyright (C) 2008 by Arul John
+Please report any bugs or feature requests to C<bug-twitter-badge at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Twitter-Badge>.  I will be notified, and then you'll
+automatically be notified of progress on your bug as I make changes.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.6.0 or,
-at your option, any later version of Perl you may have available.
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Twitter::Badge
+
+You can also look for information at:
+
+=over 4
+
+=item * RT: CPAN's request tracker (report bugs here)
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Twitter-Badge>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/Twitter-Badge>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/Twitter-Badge>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/Twitter-Badge/>
+
+=back
+
+
+=head1 ACKNOWLEDGEMENTS
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2008-2012 Arul John.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+
+=cut
+
+1; # End of Twitter::Badge
