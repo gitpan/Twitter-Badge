@@ -1,25 +1,22 @@
----
-abstract: 'Perl module that displays the current Twitter information of a user'
+--- #YAML:1.0
+name:               Twitter-Badge
+version:            0.04
+abstract:           Perl module that displays the current Twitter information of a user
 author:
-  - 'Arul John <arul@cpan.org>'
-build_requires:
-  Test::More: 0
+    - Arul John <arul@cpan.org>
+license:            perl
+distribution_type:  module
 configure_requires:
-  Module::Build: 0.40
-dynamic_config: 1
-generated_by: 'Module::Build version 0.4003, CPAN::Meta::Converter version 2.110440'
-license: perl
-meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: 1.4
-name: Twitter-Badge
-provides:
-  Twitter::Badge:
-    file: lib/Twitter/Badge.pm
-    version: 0.03
+    ExtUtils::MakeMaker:  0
+build_requires:
+    ExtUtils::MakeMaker:  0
 requires:
-  LWP::UserAgent: 5.8
-  perl: v5.8.0
-resources:
-  license: http://dev.perl.org/licenses/
-version: 0.03
+    Test::More:  0
+no_index:
+    directory:
+        - t
+        - inc
+generated_by:       ExtUtils::MakeMaker version 6.57_05
+meta-spec:
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4
