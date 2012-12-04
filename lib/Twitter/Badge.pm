@@ -5,14 +5,14 @@ use warnings;
 use Carp;
 use LWP::UserAgent;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 sub new {
     my $class = shift;
     my %args = @_;
     $args{screen_name} = undef unless defined $args{screen_name};
     $args{id} = undef unless defined $args{id};
-    $args{ua} = 'Mozilla/4.0' unless defined $args{ua};
+    $args{ua} = 'Mozilla/4.0;Twitter::Badge' unless defined $args{ua};
     $args{name} = undef;
     $args{text} = undef;
     $args{profile_image_url} = undef;
